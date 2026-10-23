@@ -1,0 +1,201 @@
+
+[
+  {
+    "game_name": "Maths Trivia",
+    "game_id": "maths_trivia",
+    "path": "maths_trivia",
+    "available": true,
+    "min_players": 2,
+    "max_players": 20,
+    "rule_book_compact": [
+      "Answer each question before the timer runs out.",
+      "Your first submitted answer is final.",
+      "Correct answers earn +10 points; incorrect answers cost 1 point.",
+      "The match ends when its configured question or time limit is reached."
+    ],
+    "rule_book_detailed": [
+      {
+        "heading": "1. Objective",
+        "paragraphs": [
+          "Solve the mathematical questions accurately and quickly. The player with the highest final score wins.",
+          "Questions can include arithmetic, powers, logarithms, determinants, trigonometry and complex-number calculations."
+        ],
+        "bullets": [
+          "Question difficulty may increase as the match progresses.",
+          "Answers are expected to be integers in the current game rules."
+        ]
+      },
+      {
+        "heading": "2. Questions and answers",
+        "paragraphs": [
+          "Each question presents a set of answer choices. Select the answer you believe is correct and submit it before the timer expires.",
+          "Your first submitted answer is locked. You cannot change it or earn another attempt for the same question."
+        ],
+        "bullets": [
+          "Correct answer: +10 points.",
+          "Incorrect answer: -1 point.",
+          "No answer before timeout: 0 points.",
+          "A question advances when all eligible players have answered or its timer expires."
+        ]
+      },
+      {
+        "heading": "3. Starting and playing",
+        "paragraphs": [
+          "Only the room owner can start the match. At least two players must be present.",
+          "The game uses the question timer and end condition selected when the room was created."
+        ],
+        "bullets": [
+          "The configured timer applies to each question.",
+          "A short countdown may appear before the first question.",
+          "Do not refresh the page during a match unless the game explicitly supports recovery."
+        ]
+      },
+      {
+        "heading": "4. Match ending and scores",
+        "paragraphs": [
+          "A match ends when the configured question count or match duration is reached. The final leaderboard determines the result."
+        ],
+        "bullets": [
+          "Higher final score ranks above lower final score.",
+          "Equal scores are ties unless the game engine implements an explicit tie-breaker.",
+          "A player's best score and latest result may be saved to their profile."
+        ]
+      },
+      {
+        "heading": "5. Leaving, connection problems and fairness",
+        "paragraphs": [
+          "Leaving a room removes you from that room. The room owner may transfer to another remaining player.",
+          "The server is authoritative for answer validation, scoring and match state. Client-side timers or displays must not be treated as proof that an answer was accepted."
+        ],
+        "bullets": [
+          "A disconnected player may lose access to the current match.",
+          "If the room closes or the server restarts, the match may be lost.",
+          "Do not exploit bugs, spam the chat or interfere with other players."
+        ]
+      }
+    ],
+    "fields": [
+      {
+        "id": "seconds_per_question",
+        "name": "Seconds per question",
+        "type": "drop-down",
+        "placeholder": "",
+        "values": "3,4,5,6,7,8,9,10",
+        "default": "5",
+        "required": true
+      },
+      {
+        "id": "end_condition",
+        "name": "Match ends by",
+        "type": "drop-down",
+        "placeholder": "",
+        "values": "questions,minutes",
+        "default": "questions",
+        "required": true
+      },
+      {
+        "id": "question_count",
+        "name": "Number of questions",
+        "type": "numerical_text",
+        "placeholder": "10–200",
+        "min": 10,
+        "max": 200,
+        "default": 10,
+        "required": true,
+        "show_when": {
+          "field": "end_condition",
+          "equals": "questions"
+        }
+      },
+      {
+        "id": "duration_minutes",
+        "name": "Match duration in minutes",
+        "type": "numerical_text",
+        "placeholder": "3–180",
+        "min": 3,
+        "max": 180,
+        "default": 3,
+        "required": true,
+        "show_when": {
+          "field": "end_condition",
+          "equals": "minutes"
+        }
+      }
+    ]
+  },
+  {
+    "game_name": "Wolf Maker",
+    "game_id": "wolf_maker",
+    "path": "wolf_maker",
+    "available": false,
+    "min_players": 2,
+    "max_players": 15,
+    "rule_book_compact": [
+      "Wolf Maker is not playable yet.",
+      "Its game rules and settings will be published before it becomes available."
+    ],
+    "rule_book_detailed": [
+      {
+        "heading": "Game status",
+        "paragraphs": [
+          "Wolf Maker is currently a placeholder. Its actual gameplay rules have not yet been implemented."
+        ],
+        "bullets": [
+          "Rooms cannot start this game yet.",
+          "The final rule book will be added when the game engine is ready."
+        ]
+      }
+    ],
+    "fields": []
+  },
+  {
+    "game_name": "Paper.io",
+    "game_id": "paper_io",
+    "path": "paper_io",
+    "available": false,
+    "min_players": 2,
+    "max_players": 15,
+    "rule_book_compact": [
+      "Paper.io is not playable yet.",
+      "Its game rules and settings will be published before it becomes available."
+    ],
+    "rule_book_detailed": [
+      {
+        "heading": "Game status",
+        "paragraphs": [
+          "Paper.io is currently a placeholder. Its actual gameplay rules have not yet been implemented."
+        ],
+        "bullets": [
+          "Rooms cannot start this game yet.",
+          "The final rule book will be added when the game engine is ready."
+        ]
+      }
+    ],
+    "fields": []
+  },
+  {
+    "game_name": "Snake",
+    "game_id": "snake",
+    "path": "snake",
+    "available": false,
+    "min_players": 1,
+    "max_players": 4,
+    "rule_book_compact": [
+      "Snake is not playable yet.",
+      "Its multiplayer rules and settings will be published before it becomes available."
+    ],
+    "rule_book_detailed": [
+      {
+        "heading": "Game status",
+        "paragraphs": [
+          "Snake is currently a placeholder. Its actual gameplay rules have not yet been implemented."
+        ],
+        "bullets": [
+          "Rooms cannot start this game yet.",
+          "The final rule book will be added when the game engine is ready."
+        ]
+      }
+    ],
+    "fields": []
+  }
+]
