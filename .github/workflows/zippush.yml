@@ -23,15 +23,15 @@ jobs:
             exit 1
           fi
 
-      - name: Extract test.zip to temporary directory
+      - name: Extract mpgames.zip to temporary directory
         run: |
           mkdir temp_extracted
-          unzip test.zip -d temp_extracted/
+          unzip mpgames.zip -d temp_extracted/
 
       - name: Move extracted files to root and clean up
         run: |
           # Remove the original zip so it doesn't get re-committed or cause loops
-          rm test.zip
+          rm mpgames.zip
           
           # Move everything from temp folder to root
           # Using dotglob to ensure hidden files (like .gitignore) are moved too
