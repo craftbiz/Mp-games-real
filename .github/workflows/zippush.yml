@@ -16,10 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check if test.zip exists
+      - name: Check if mpgames.zip exists
         run: |
-          if [ ! -f "test.zip" ]; then
-            echo "Error: test.zip not found in the root of the repository!"
+          if [ ! -f "mpgames.zip" ]; then
+            echo "Error: mpgames.zip not found in the root of the repository!"
             exit 1
           fi
 
