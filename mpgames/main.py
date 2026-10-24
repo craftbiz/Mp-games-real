@@ -64,7 +64,19 @@ def health():
         "service": "multiplayer-game-platform"
     })
 
-
+@app.route("/debug-page")
+def debug_page():
+    return """
+    <!doctype html>
+    <html>
+      <head><title>MPGames Test</title></head>
+      <body style="background:#111;color:white;padding:30px;font:20px Arial">
+        <h1>MPGames page test works</h1>
+        <p>If you can read this, Flask and basic HTML rendering work.</p>
+      </body>
+    </html>
+    """
+    
 if __name__ == "__main__":
     host = "0.0.0.0"
     port = int(os.environ.get("PORT", 8080))
