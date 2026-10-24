@@ -6,20 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#111827">
   <title>{% block title %}MPGames{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+<!--  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script> -->
   {% block head %}{% endblock %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{{ url_for('main.home') }}">
+    <a class="brand" href="{{ url_for('home') }}">
       <span class="brand-icon">M</span>
       <span>MP<span class="brand-accent">Games</span></span>
     </a>
 
     <nav class="nav-links">
-      <a href="{{ url_for('main.home') }}">Home</a>
+      <a href="{{ url_for('home') }}">Home</a>
       <a href="{{ url_for('games.games_page', game_slug='maths_trivia') }}">Games</a>
 
       {% if session.get('user_id') %}
