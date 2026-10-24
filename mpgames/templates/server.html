@@ -1,0 +1,215 @@
+
+{% extends "base.html" %}
+{% block title %}Waiting room · MPGames{% endblock %}
+
+{% block head %}
+<script defer src="{{ url_for('static', filename='js/server.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div id="room-app"
+     data-server-id="{{ server_id|default(server.server_id, true) }}"
+     data-user-id="{{ session.get('user_id', '') }}">
+
+  <div class="room-topline">
+    <a class="text-link"
+       href="{{ url_for('games.games_page', game_slug='maths_trivia') }}"
+       id="leave-room-link">← Back to games</a>
+
+    <span class="connection-status" id="connection-status">
+      <span class="status-dot"></span>
+      <span id="connection-text">Connecting…</span>
+    </span>
+  </div>
+
+  <section class="room-hero panel">
+    <div class="room-hero-main">
+      <p class="eyebrow">MULTIPLAYER LOBBY</p>
+      <h1 id="room-title">Loading room…</h1>
+      <div class="room-meta">
+        <span class="pill" id="room-game">Game</span>
+        <span class="muted" id="room-id-label"></span>
+      </div>
+    </div>
+
+    <div class="room-status-block">
+      <span class="status-chip status-ready" id="room-status">WAITING</span>
+      <div class="player-count">
+        <strong id="player-count">0</strong>
+        <span id="player-limit"> / 0 players</span>
+      </div>
+    </div>
+  </section>
+
+  <div id="room-closed" class="panel notice-panel" hidden>
+    <h2>Room closed</h2>
+    <p class="muted" id="room-closed-message">
+      This room is no longer available.
+    </p>
+    <a class="button button-primary"
+       href="{{ url_for('games.games_page', game_slug='maths_trivia') }}">
+      Browse games
+    </a>
+  </div>
+
+  <section class="room-layout" id="room-content">
+    <div class="room-main-column">
+      <section class="panel players-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">YOUR CREW</p>
+            <h2>
+              Players
+              <span class="subtle-count" id="players-heading-count">(0)</span>
+            </h2>
+          </div>
+          <span class="muted small">Owner starts the game</span>
+        </div>
+
+        <div class="player-list" id="player-list" aria-live="polite">
+          <div class="loading-state">Waiting for room information…</div>
+        </div>
+
+        <div class="room-actions">
+          <div class="owner-note" id="owner-note">
+            The room owner can start the game when enough players have joined.
+          </div>
+          <button class="button button-primary" id="start-game" disabled>
+            Start game <span aria-hidden="true">→</span>
+          </button>
+        </div>
+        <p id="start-error" class="form-error" role="alert"></p>
+      </section>
+
+      <section class="panel chat-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">SAY HELLO</p>
+            <h2>Room chat</h2>
+          </div>
+          <span class="muted small">Be kind to other players</span>
+        </div>
+
+        <div id="chat-messages" class="chat-messages"
+             aria-live="polite" aria-relevant="additions">
+          <div class="chat-system-message">
+            Welcome! Messages will appear here.
+          </div>
+        </div>
+
+        <form id="chat-form" class="chat-form">
+          <label class="visually-hidden" for="chat-input">Write a message</label>
+          <input id="chat-input" maxlength="500"
+                 placeholder="Write a message…"
+                 autocomplete="off" required>
+          <button class="button button-primary" type="submit"
+                  aria-label="Send message">
+            Send
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <aside class="room-side-column">
+      <section class="panel quick-rules">
+        <div class="rules-heading">
+          <span class="rules-icon">📘</span>
+          <div>
+            <p class="eyebrow">BEFORE YOU PLAY</p>
+            <h2>Quick rules</h2>
+          </div>
+        </div>
+
+        <ol class="quick-rule-list" id="quick-rule-list">
+          <li>Wait for the owner to start the match.</li>
+          <li>Follow the selected game's rules and timer.</li>
+          <li>Submit your answer before time runs out.</li>
+          <li>Respect other players and keep chat friendly.</li>
+        </ol>
+
+        <button class="button button-secondary button-full"
+                id="open-rulebook">
+          <span>Read the Rule Book</span>
+          <span aria-hidden="true">↗</span>
+        </button>
+      </section>
+
+      <section class="panel room-info-panel">
+        <p class="eyebrow">ROOM INFORMATION</p>
+        <div class="info-line">
+          <span>Room owner</span><strong id="owner-name">—</strong>
+        </div>
+        <div class="info-line">
+          <span>Game</span><strong id="info-game">—</strong>
+        </div>
+        <div class="info-line">
+          <span>Players</span><strong id="info-capacity">—</strong>
+        </div>
+        <div class="info-line">
+          <span>Room status</span><strong id="info-status">Waiting</strong>
+        </div>
+      </section>
+    </aside>
+  </section>
+
+  <section class="panel game-start-panel" id="game-start-panel" hidden>
+    <div class="game-start-symbol">🎮</div>
+    <p class="eyebrow">MATCH STARTED</p>
+    <h2 id="game-start-title">Get ready!</h2>
+    <p id="game-start-message" class="muted">
+      Preparing your game session…
+    </p>
+    <div id="game-stage" class="game-stage"></div>
+    <button class="button button-secondary" id="back-to-lobby" hidden>
+      Back to waiting room
+    </button>
+  </section>
+</div>
+
+<!-- Detailed Rule Book -->
+<div class="modal-backdrop" id="rulebook-modal" hidden>
+  <section class="modal-card rulebook-card" role="dialog"
+           aria-modal="true" aria-labelledby="rulebook-title">
+
+    <div class="modal-heading rulebook-header">
+      <div>
+        <p class="eyebrow">MPGAMES · PLAYER GUIDE</p>
+        <h2 id="rulebook-title">The Rule Book</h2>
+        <p class="muted">Everything you need to know before the match.</p>
+      </div>
+      <button class="icon-button" id="close-rulebook"
+              aria-label="Close Rule Book">✕</button>
+    </div>
+
+    <div class="rulebook-body" id="rulebook-body">
+      <section class="rule-section">
+        <h3>The waiting room</h3>
+        <p>
+          Joining a room puts you in its player list. The room owner controls
+          the start button. Only the owner can start a match.
+        </p>
+      </section>
+
+      <section class="rule-section">
+        <h3>Leaving and disconnecting</h3>
+        <p>
+          A real disconnect removes a player from the room. An intentional
+          transition into gameplay must be handled separately by the server.
+        </p>
+      </section>
+
+      <section class="rule-section">
+        <h3>Game rules</h3>
+        <p>Game-specific rules will be loaded from the game metadata.</p>
+      </section>
+    </div>
+
+    <div class="rulebook-footer">
+      <span class="muted small">
+        Game-specific settings may change how a match works.
+      </span>
+      <button class="button button-primary" id="rulebook-done">Got it</button>
+    </div>
+  </section>
+</div>
+{% endblock %}

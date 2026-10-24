@@ -1,0 +1,9 @@
+#game-app { max-width: 980px; margin: 0 auto; }
+.game-page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin:1.25rem 0; }
+.game-page-header h1 { margin:.2rem 0 .5rem; }
+.game-stage { min-height:240px; padding:clamp(1rem,3vw,2rem); }
+#game-runtime-error:empty { display:none; }
+@media (max-width:640px) {
+  .game-page-header { flex-direction:column; }
+  .game-page-header .connection-status { align-self:flex-start; }
+}

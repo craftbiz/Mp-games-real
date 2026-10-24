@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+{% block title %}Create account · MPGames{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-promo">
+    <span class="pill">YOUR GAME. YOUR CREW.</span>
+    <h1>Make room<br>for fun.</h1>
+    <p>Create your player account and start building your multiplayer history.</p>
+    <div class="promo-symbols" aria-hidden="true">🏆 🎯 ⚡</div>
+  </div>
+
+  <form class="auth-card" method="post"
+        action="{{ url_for('auth.register') }}">
+    <p class="eyebrow">GET STARTED</p>
+    <h2>Create account</h2>
+    <p class="muted">It only takes a moment.</p>
+
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username"
+           minlength="3" maxlength="24" pattern="[A-Za-z0-9_-]+"
+           title="Use letters, numbers, underscores, or hyphens."
+           required autofocus>
+    <small class="field-help">3–24 characters: letters, numbers, _ or -</small>
+
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password"
+           autocomplete="new-password" minlength="8" maxlength="128" required>
+
+    <label for="confirm_password">Confirm password</label>
+    <input id="confirm_password" name="confirm_password" type="password"
+           autocomplete="new-password" minlength="8" maxlength="128" required>
+
+    <button class="button button-primary button-full" type="submit">
+      Create account <span aria-hidden="true">→</span>
+    </button>
+
+    <p class="auth-switch">
+      Already registered? <a href="{{ url_for('auth.login') }}">Log in</a>
+    </p>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,2 @@
+
+"""Maths Trivia game package."""

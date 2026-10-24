@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ game.game_name }} · MPGames{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/game-runtime.css') }}">
+  {% if game.get('assets', {}).get('css') %}
+  <link rel="stylesheet"
+        href="{{ url_for('games.game_asset', game_slug=game_id, filename=game.get('assets', {}).get('css')) }}">
+  {% endif %}
+  <script defer src="{{ url_for('static', filename='js/game-runtime.js') }}"></script>
+  {% if game.get('assets', {}).get('js') %}
+  <script defer src="{{ url_for('games.game_asset', game_slug=game_id, filename=game.get('assets', {}).get('js')) }}"></script>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<main id="game-app"
+      class="game-page"
+      data-server-id="{{ server_id }}"
+      data-game-id="{{ game_id }}"
+      data-handoff-token="{{ handoff_token }}"
+      data-user-id="{{ user_id }}">
+  <header class="game-page-header">
+    <div>
+      <p class="eyebrow">MPGAMES · LIVE MATCH</p>
+      <h1 id="game-page-title">{{ game.game_name }}</h1>
+      <p class="muted">Room <code>{{ server_id }}</code></p>
+    </div>
+    <div id="game-connection" class="connection-status" role="status" aria-live="polite">
+      <span class="status-dot"></span>
+      <span id="game-connection-text">Connecting to match…</span>
+    </div>
+  </header>
+
+  <section id="game-stage" class="game-stage panel" aria-live="polite">
+    <p class="loading-state">Connecting to the game server…</p>
+  </section>
+
+  <p id="game-runtime-error" class="form-error" role="alert"></p>
+  <p class="muted small">Keep this page open while playing. Scores are submitted by the game server.</p>
+</main>
+{% endblock %}

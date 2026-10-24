@@ -1,0 +1,105 @@
+MPGAMES COMPATIBLE GAME-BUILDING CONTEXT
+========================================
+
+Build a complete multiplayer game plugin for the MPGames Flask + Flask-SocketIO platform. Follow this contract exactly. Do not rewrite or patch shared server files for an ordinary new game.
+
+PLATFORM ARCHITECTURE
+- The shared app handles login/session identity, rooms, room settings, player membership, lobby chat, owner-start permission, the secure lobby-to-gameplay redirect, Socket.IO connection handoff, result persistence, and leaderboard updates.
+- The game owns its game rules, authoritative server-side state, timers, scoring, game-specific Socket.IO events, frontend JS, and CSS.
+- The game page is rendered by a shared template. Do not create a separate HTML page unless explicitly asked.
+- The shared frontend runtime is /static/js/game-runtime.js. It creates window.MPGamesGame and handles the authenticated one-time gameplay handoff.
+- Games are registered in mpgames/games/gamesmeta.json. Available plugins are loaded at server startup.
+- Each game's directory is mpgames/games/<game_id>/.
+- The server must remain authoritative: never trust client-submitted scores or game outcomes.
+
+REQUIRED FILES
+mpgames/games/<game_id>/__init__.py
+mpgames/games/<game_id>/plugin.py
+mpgames/games/<game_id>/engine.py
+mpgames/games/<game_id>/static/<game_id>.js
+mpgames/games/<game_id>/static/<game_id>.css (if needed)
+
+METADATA
+Add a JSON object to gamesmeta.json:
+{
+  "game_name": "Readable Name",
+  "game_id": "lowercase_underscore_id",
+  "path": "same_folder_name",
+  "plugin_module": "games.<game_id>.plugin",
+  "available": true,
+  "min_players": 2,
+  "max_players": 8,
+  "assets": {"js": "<game_id>.js", "css": "<game_id>.css"},
+  "fields": [],
+  "rule_book_compact": ["Short rules"],
+  "rule_book_detailed": []
+}
+Use a unique safe game_id beginning with a letter, and ensure the path and asset filenames match real files. Settings fields support types drop-down, numerical_text, and text. If the game needs third-party Python dependencies, list them in the root requirements.txt; a folder does not install its own dependencies.
+
+MANDATORY PLUGIN API
+plugin.py must define:
+1) start_match(platform, server_id)
+2) register_socket_events(socketio, platform)
+
+start_match is called after the owner starts the match and shared server checks pass. Read the server-owned room/settings/players, initialize game state in room under a unique key such as room["_<game_id>"], and start background work with platform.socketio.start_background_task if needed. Return True on success; raise/return False if startup fails.
+
+register_socket_events registers game-specific Socket.IO handlers. Prefix event names with the game ID to avoid collisions. Every handler must:
+- obtain user_id from flask.session, not client payload;
+- get server_id using platform.server_for_sid(request.sid);
+- verify platform.get_player(server_id, user_id, request.sid);
+- verify room["game_slug"] equals this game's ID and the match is active;
+- validate all action data against server-side state;
+- calculate scores on the server;
+- emit only relevant, sanitized state.
+
+AVAILABLE PLATFORM API
+- platform.socketio
+- platform.rooms (shared in-memory rooms; protect mutation/read-modify-write with platform.lock)
+- platform.lock (RLock)
+- platform.get_room(server_id)
+- platform.get_player(server_id, user_id, sid=None)
+- platform.server_for_sid(sid)
+- platform.emit(event, payload, server_id)
+- platform.submit_results(server_id, results, match_data=None)
+
+At match end, call platform.submit_results from Python engine code:
+platform.submit_results(server_id, [
+  {"user_id": server_known_id, "score": integer_score, "data": {"extra": "details"}}
+], {"reason": "normal_finish"})
+Build results from server-owned state. Never call this API from browser JS. It saves scores through database.record_result, updates the main leaderboard, marks the room completed, and emits platform_match_finished.
+
+BROWSER API
+The shared runtime exposes:
+- window.MPGamesGame.socket
+- window.MPGamesGame.serverId, gameId, userId
+- window.MPGamesGame.ready
+- window.MPGamesGame.emit(eventName, payload)
+- window.MPGamesGame.showError(message), clearError()
+- window event "mpgames:ready" once the gameplay socket handoff succeeds.
+
+Frontend starter:
+"use strict";
+(() => {
+  const game = window.MPGamesGame;
+  if (!game || game.gameId !== "<game_id>") return;
+  const socket = game.socket;
+  window.addEventListener("mpgames:ready", () => {
+    // Gameplay socket is verified and joined.
+  });
+  socket.on("<game_id>:state", state => {
+    // Render state.
+  });
+  // Send actions with game.emit("<game_id>:action", { ... }).
+})();
+
+Do not create a second Socket.IO connection, do not emit gameplay_join manually, and do not assume the socket is ready before "mpgames:ready". Use textContent for untrusted text instead of innerHTML.
+
+EXPECTED OUTPUT FROM THE AI
+1. Implement the complete game rules and all required plugin files.
+2. Add the correct gamesmeta.json entry.
+3. Update requirements.txt only if genuinely required.
+4. Do not modify main.py, server.py, platform_api.py, plugin_loader.py, or the shared runtime unless a real platform bug prevents compliance; explain any such need before changing shared files.
+5. Include a brief list of every created/changed path and exact test steps.
+6. Review all imports, event names, state keys, player validation, result submission, assets and settings before claiming completion.
+7. Provide complete replacement file contents or a complete patch, not disconnected snippets.
+8. Make the game mobile responsive and ensure all players see synchronized server-authoritative state.
